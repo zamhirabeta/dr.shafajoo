@@ -7,18 +7,77 @@
 //
 
 import UIKit
+import CoreLocation
 
-class ViewController: UIViewController {
+class ViewController: UIViewController , CLLocationManagerDelegate {
+
+    let locationManager = CLLocationManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        //For use when app is open & in the background
+        //locationManager.requestWhenInUseAuthorization()
+        
+        //For use when app is oppen
+        locationManager.requestWhenInUseAuthorization()
+        
+        if CLLocationManager.locationServicesEnabled(){
+        
+            locationManager.delegate = self
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            locationManager.startUpdatingLocation()
+        }
+        
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location  = locations.first{
+            print(location.coordinate)
+        }
     }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if(status == CLAuthorizationStatus.denied){
+            showLocationDisablePopUp()
+        }
+    }
+    
+    func showLocationDisablePopUp(){
+        let alertController = UIAlertController(title: "Background Location Access Disable", message: "dadach kojaii??", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        let openAction = UIAlertAction(title: "open settings", style: .default) { (action) in
+            if let url = URL(string: UIApplicationOpenSettingsURLString){
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
+        alertController.addAction(openAction)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 
 }
